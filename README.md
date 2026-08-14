@@ -56,6 +56,8 @@ Claude: You are a helpful assistant that helps users write code, fix bugs, and e
 
 Want to know what changed? Just ask: "tell me what you changed" or "give me a before/after comparison" — by default the skill stays silent about its edits and just returns the result.
 
+By default you get the optimized text back and decide what to do with it. If you want to skip the copy-paste round trip and have Claude immediately start operating under the optimized prompt in the same conversation, say so explicitly — e.g. "优化完直接用" / "apply it directly, don't make me paste it back". This only works within the current conversation; a skill has no way to push text into a different chat window or model.
+
 ## Design principles
 
 This skill was built to solve a specific failure mode of naive "prompt optimization": an LLM asked to "optimize" a prompt tends to *expand* it — adding capabilities, softening or hardening constraints, inventing process steps, and turning a three-line prompt into a ten-section template. That's prompt *creation* wearing the costume of prompt *editing*, and it quietly changes what the user is committing their AI to do.

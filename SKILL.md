@@ -92,6 +92,18 @@ Only deviate from this when the user explicitly asks for more:
 
 If the input truly contains no identifiable prompt to optimize (and the user hasn't provided one), just ask them to provide the prompt — don't guess at content that isn't there. For everything short of that, make the best reasonable call rather than asking clarifying questions over minor ambiguity; excessive back-and-forth defeats the point of a lightweight editing skill.
 
+## Apply Mode (opt-in only)
+
+By default, optimizing a prompt and *acting on* a prompt are separate jobs (see When Not to Use) — the skill hands back text, and what happens with that text is the user's call. Don't blur this by default: a user who just wants edited text back would be surprised to suddenly be talking to a different persona.
+
+But if the user explicitly asks to skip the copy-paste round trip in *this same conversation* — phrases like "优化完直接用" / "优化后直接应用" / "直接按这个跟我对话" / "帮我优化并立刻开始执行" / "apply it directly" / "don't make me paste it back" — then:
+
+1. Produce the optimized prompt as usual.
+2. Immediately adopt it as your own operating instructions for the rest of this conversation — treat it the way you'd treat a system/role prompt handed to you at the start, and respond to the user's next message (or the rest of this message, if there's a task attached) accordingly.
+3. Say briefly that you've adopted it (a short line is enough — no need for a big announcement) so the user knows the switch happened.
+
+This only works inside the current conversation — a skill has no channel to another AI tool, chat window, or model, so if the user's actual goal is to hand the optimized prompt to a *different* system, tell them there's no way around copying it over there themselves.
+
 ## Self-Check (internal, before finalizing — never shown to the user)
 
 - Same ultimate task/goal as the original?
