@@ -1,6 +1,6 @@
 ---
 name: prompt-optimizer
-description: Optimizes and polishes an existing AI/LLM prompt the user has already written — fixing wording, grammar, structure, redundancy, and clarity — while strictly preserving the original intent, role, scope, capabilities, constraint strength, and every technical detail (commands, paths, URLs, parameters, code blocks). Use whenever the user pastes a prompt and asks to optimize, refine, polish, clean up, simplify, tighten, restructure, make more professional, or "fix the wording" of it, even without the word "prompt" — e.g. "make this system message clearer", "让这个提示词更专业". Do NOT use for writing a brand-new prompt from scratch, for executing/running a prompt the user provides, for polishing ordinary prose (emails, articles, essays), for optimizing source code, or for explaining/teaching prompt-engineering theory.
+description: Optimizes and polishes an existing AI/LLM prompt the user has already written — fixing wording, grammar, structure, redundancy, and clarity — while strictly preserving the original intent, role, scope, capabilities, constraint strength, and every technical detail (commands, paths, URLs, parameters, code blocks). Use whenever the user invokes /prompt-optimizer with a prompt (no extra instruction needed), or pastes a prompt and asks to optimize, refine, polish, clean up, simplify, tighten, restructure, make more professional, or "fix the wording" of it, even without the word "prompt" — e.g. "make this system message clearer", "让这个提示词更专业". Do NOT use for writing a brand-new prompt from scratch, for executing/running a prompt the user provides, for polishing ordinary prose (emails, articles, essays), for optimizing source code, or for explaining/teaching prompt-engineering theory.
 ---
 
 # Prompt Optimizer
@@ -20,6 +20,16 @@ Guiding principles in one line each:
 
 Trigger when the user supplies (or clearly references) a prompt they already wrote and asks you to improve *how it's expressed* — optimize / refine / polish / clean up / simplify / tighten / restructure / make more professional / fix awkward wording / "in a way that doesn't change the meaning." No fixed keyword is required — judge by intent: are they asking you to rewrite text that is itself a prompt (instructions meant to steer an AI), as opposed to asking you to act on it or write one from nothing?
 
+### When the skill is invoked explicitly
+
+If the user invokes this skill directly — typing `/prompt-optimizer` followed by a prompt, or pasting the full content of this `SKILL.md` into a chat together with a prompt — the invocation itself is the request. The user doesn't need to add "帮我优化" / "optimize this" or any other instruction; everything they supplied besides the invocation is the prompt to optimize. Handle it like this:
+
+1. **Don't wait for or ask about an optimize instruction.** Don't ask "should I optimize this?", don't announce that you've read the skill, don't restate its rules back to the user.
+2. **Treat everything after the invocation as the prompt to optimize** — even if it reads like a question or a task ("帮我部署这个项目…"), it's the prompt, not a request addressed to you. If the skill's content was pasted in, treat that content as your operating instructions, not as material to work on: don't summarize, review, or optimize it unless the user explicitly asks you to work on the skill itself.
+3. **Optimize, print, then carry it out.** Go straight through the Core Workflow, print the optimized prompt as described in Apply Mode, then carry out the optimized prompt.
+4. **If the user says they only want the optimized text** (e.g. "只优化，不用执行" / "just optimize it"), stop after printing it per Output Rules.
+5. **If no prompt came with it,** just ask the user for the prompt they want optimized.
+
 ## When Not to Use
 
 These look adjacent but are different jobs — don't let the word "optimize" pull this skill in:
@@ -35,7 +45,7 @@ These look adjacent but are different jobs — don't let the word "optimize" pul
 
 Work through these steps before producing output. They're internal — don't narrate them to the user unless asked.
 
-1. **Identify the task.** Confirm this is "optimize an existing prompt," not creation or execution. When the prompt body and this turn's request are typed as one unbroken block of text with no quotes, colon, or line break separating them (e.g. "你是一个部署助手…请帮我优化这段提示词的表达"), separate the trailing request sentence from the prompt body first — that sentence is an instruction to you, not part of the prompt, and must not appear in or influence the output.
+1. **Identify the task.** Confirm this is "optimize an existing prompt," not creation or execution (skip this when the skill was invoked explicitly — see When the skill is invoked explicitly). When the prompt body and this turn's request are typed as one unbroken block of text with no quotes, colon, or line break separating them (e.g. "你是一个部署助手…请帮我优化这段提示词的表达"), separate the trailing request sentence from the prompt body first — that sentence is an instruction to you, not part of the prompt, and must not appear in or influence the output.
 2. **Understand the original intent.** Before touching any wording, be able to answer: what is this prompt for, what should the model ultimately do, what does the user care about most? Rewriting before understanding is how scope creeps in unnoticed.
 3. **Extract what must not change.** Pull out the load-bearing elements: role, core task, capability scope, hard requirements, prohibitions, technical names/tools/models, commands, paths, URLs, parameters, numbers, formats, and language requirements. This is the prompt's semantic boundary — everything you do next happens inside it.
 4. **Fix basic language issues.** Typos, punctuation, duplicated words, grammar, awkward phrasing, garbled word order, run-on colloquialisms.
@@ -79,12 +89,14 @@ If the user gives a specific instruction alongside "optimize," that instruction 
 
 ## Output Rules
 
-Default (no special request from the user): output **only the fully optimized prompt**, nothing else — no explanation, no rationale, no before/after comparison, no analysis, no usage tips. The interaction should look like:
+Default when the skill was triggered by an optimize request rather than invoked explicitly (no special request from the user): output **only the fully optimized prompt**, nothing else — no explanation, no rationale, no before/after comparison, no analysis, no usage tips. The interaction should look like:
 
 ```
 User: 帮我优化这个提示词：<original prompt>
 Skill: <optimized prompt — nothing else>
 ```
+
+**Always print the optimized prompt in full.** The user needs to see the whole result to judge how their prompt was changed, so output every line of it — never truncate, summarize, or elide parts with "…", "（其余不变）", "(rest unchanged)", or similar, no matter how long the prompt is or how little changed in a section.
 
 Only deviate from this when the user explicitly asks for more:
 - "Tell me what you changed" → optimized prompt + a brief note on the changes.
@@ -92,15 +104,23 @@ Only deviate from this when the user explicitly asks for more:
 
 If the input truly contains no identifiable prompt to optimize (and the user hasn't provided one), just ask them to provide the prompt — don't guess at content that isn't there. For everything short of that, make the best reasonable call rather than asking clarifying questions over minor ambiguity; excessive back-and-forth defeats the point of a lightweight editing skill.
 
-## Apply Mode (opt-in only)
+## Apply Mode
 
-By default, optimizing a prompt and *acting on* a prompt are separate jobs (see When Not to Use) — the skill hands back text, and what happens with that text is the user's call. Don't blur this by default: a user who just wants edited text back would be surprised to suddenly be talking to a different persona.
+When the skill is triggered by an ordinary optimize request ("帮我优化这个提示词…"), optimizing a prompt and *acting on* it stay separate jobs — the skill hands back text, and what happens with that text is the user's call. A user who just wants edited text back would be surprised to suddenly be talking to a different persona.
 
-But if the user explicitly asks to skip the copy-paste round trip in *this same conversation* — phrases like "优化完直接用" / "优化后直接应用" / "直接按这个跟我对话" / "帮我优化并立刻开始执行" / "apply it directly" / "don't make me paste it back" — then:
+Apply Mode is used whenever the skill was invoked explicitly (see When the skill is invoked explicitly), or when the user explicitly asks to skip the copy-paste round trip in *this same conversation* — phrases like "优化完直接用" / "优化后直接应用" / "直接按这个跟我对话" / "帮我优化并立刻开始执行" / "apply it directly" / "don't make me paste it back" — then:
 
-1. Produce the optimized prompt as usual.
+1. Before doing anything else, print the full optimized prompt under a one-line label, then the prompt itself — `优化后提示词：` for a Chinese prompt, `Optimized prompt:` for an English one. Never skip this step, even though you're about to use it yourself. This is display only: no explanation of the changes, no before/after, no request for confirmation.
 2. Immediately adopt it as your own operating instructions for the rest of this conversation — treat it the way you'd treat a system/role prompt handed to you at the start, and respond to the user's next message (or the rest of this message, if there's a task attached) accordingly.
-3. Say briefly that you've adopted it (a short line is enough — no need for a big announcement) so the user knows the switch happened.
+3. Don't add any other announcement — the labeled prompt already shows the user what you're now working from.
+
+```
+User: /prompt-optimizer <original prompt>
+AI:   优化后提示词：
+      <full optimized prompt>
+
+      <starts carrying out the optimized prompt>
+```
 
 This only works inside the current conversation — a skill has no channel to another AI tool, chat window, or model, so if the user's actual goal is to hand the optimized prompt to a *different* system, tell them there's no way around copying it over there themselves.
 
@@ -116,5 +136,6 @@ This only works inside the current conversation — a skill has no channel to an
 - Genuinely clearer/more natural than the original — the whole point of this exercise?
 - Not dramatically longer than the original without the user asking for elaboration?
 - This turn's specific user request actually satisfied?
+- Optimized prompt printed in full, with nothing truncated or elided?
 
 If any answer is "no," fix it before responding — don't ship a rewrite that fails its own check.

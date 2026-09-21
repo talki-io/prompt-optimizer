@@ -14,7 +14,7 @@ Point it at a prompt you've already written and ask to optimize / refine / polis
 - every technical detail verbatim: commands, paths, URLs, parameters, file names, code blocks, model/tool names
 - the original language (Chinese stays Chinese, English stays English, mixed stays mixed)
 
-By default it outputs **only the optimized prompt** — no explanation, no before/after, no analysis — unless you ask for one.
+When you invoke it with `/prompt-optimizer`, it prints the optimized prompt as `优化后提示词：<full optimized prompt>` and then carries it out. When it is triggered by an ordinary "optimize this prompt" request instead, it outputs **only the optimized prompt**. Either way there is no explanation, no before/after and no analysis unless you ask for one, and the prompt is always printed in full, never truncated or shortened with "(rest unchanged)", so you can see exactly what it became.
 
 It deliberately does **not** trigger for: writing a new prompt from scratch, executing a prompt you provide, polishing ordinary prose (emails/articles), optimizing source code, or explaining prompt-engineering theory. See the "When Not to Use" section in `SKILL.md` for the full boundary.
 
@@ -40,23 +40,30 @@ git clone https://github.com/talki-io/prompt-optimizer.git ~/.claude/skills/prom
 
 **Codex / other Agent Skills-compatible tools:** copy `SKILL.md` into whatever skills directory that tool discovers — the file itself is platform-neutral.
 
+**No install (any chat AI):** paste the full content of `SKILL.md` into the chat together with the prompt you want optimized (no "帮我优化" needed). The AI optimizes your prompt right away, prints it as `优化后提示词：<full optimized prompt>`, and then carries it out. It won't summarize or review the skill text. If you only want the optimized text, add "只优化，不用执行" (just optimize it).
+
 ## Usage
 
-```
-You: 帮我优化这个提示词：你是一名专业提示词优化大师，熟悉各种提示词优化，书写，你主要任务是协助用户完成提示词优化工作
-
-Claude: 你是一名专业的提示词优化大师，熟悉各类提示词的优化与撰写，主要任务是协助用户完成提示词优化工作。
-```
+Invoke the skill with `/prompt-optimizer` followed by your prompt — no need to add "帮我优化" / "optimize this". Claude optimizes the prompt, prints it as `优化后提示词：<full optimized prompt>`, and then carries it out. Add "只优化，不用执行" (just optimize it) if you only want the text back.
 
 ```
-You: Optimize this prompt: "you are helpful assistant that help user write code and also fix bug and also explain things good"
+You: /prompt-optimizer 你是一名专业提示词优化大师，熟悉各种提示词优化，书写，你主要任务是协助用户完成提示词优化工作
+
+Claude: 优化后提示词：
+你是一名专业的提示词优化大师，熟悉各类提示词的优化与撰写，主要任务是协助用户完成提示词优化工作。
+
+（接着按优化后的提示词开始工作）
+```
+
+```
+You (without invoking the skill): Optimize this prompt: "you are helpful assistant that help user write code and also fix bug and also explain things good"
 
 Claude: You are a helpful assistant that helps users write code, fix bugs, and explain concepts clearly.
 ```
 
 Want to know what changed? Just ask: "tell me what you changed" or "give me a before/after comparison" — by default the skill stays silent about its edits and just returns the result.
 
-By default you get the optimized text back and decide what to do with it. If you want to skip the copy-paste round trip and have Claude immediately start operating under the optimized prompt in the same conversation, say so explicitly — e.g. "优化完直接用" / "apply it directly, don't make me paste it back". This only works within the current conversation; a skill has no way to push text into a different chat window or model.
+When the skill is triggered by an ordinary "optimize this prompt" request instead of `/prompt-optimizer`, you get the optimized text back and decide what to do with it. If you want to skip the copy-paste round trip and have Claude immediately start operating under the optimized prompt in the same conversation (it prints `优化后提示词：<full prompt>` first, then starts), say so explicitly — e.g. "优化完直接用" / "apply it directly, don't make me paste it back". This only works within the current conversation; a skill has no way to push text into a different chat window or model.
 
 ## Design principles
 
