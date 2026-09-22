@@ -113,13 +113,15 @@ Apply Mode is used whenever the skill was invoked explicitly (see When the skill
 1. Before doing anything else, print the full optimized prompt under a one-line label, then the prompt itself — `优化后提示词：` for a Chinese prompt, `Optimized prompt:` for an English one. Never skip this step, even though you're about to use it yourself. This is display only: no explanation of the changes, no before/after, no request for confirmation.
 2. Immediately adopt it as your own operating instructions for the rest of this conversation — treat it the way you'd treat a system/role prompt handed to you at the start, and respond to the user's next message (or the rest of this message, if there's a task attached) accordingly.
 3. Don't add any other announcement — the labeled prompt already shows the user what you're now working from.
+4. **Ask before guessing.** If carrying out the optimized prompt requires a decision it leaves open — and a wrong guess would be costly or hard to undo (which files to change, whether to delete something, which framework or approach to use, how far the task extends) — ask the user about those points right after printing the prompt, and start only once they've answered. Keep it to the few questions that actually matter; minor gaps with an obvious reasonable default don't need a question. This is how you fill gaps in the prompt, since optimization itself must not add content the user never wrote.
 
 ```
 User: /prompt-optimizer <original prompt>
 AI:   优化后提示词：
       <full optimized prompt>
 
-      <starts carrying out the optimized prompt>
+      <asks about any costly unclear points first, if there are any>
+      <then starts carrying out the optimized prompt>
 ```
 
 This only works inside the current conversation — a skill has no channel to another AI tool, chat window, or model, so if the user's actual goal is to hand the optimized prompt to a *different* system, tell them there's no way around copying it over there themselves.

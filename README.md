@@ -44,7 +44,7 @@ git clone https://github.com/talki-io/prompt-optimizer.git ~/.claude/skills/prom
 
 ## Usage
 
-Invoke the skill with `/prompt-optimizer` followed by your prompt — no need to add "帮我优化" / "optimize this". Claude optimizes the prompt, prints it as `优化后提示词：<full optimized prompt>`, and then carries it out. Add "只优化，不用执行" (just optimize it) if you only want the text back.
+Invoke the skill with `/prompt-optimizer` followed by your prompt — no need to add "帮我优化" / "optimize this". Claude optimizes the prompt, prints it as `优化后提示词：<full optimized prompt>`, and then carries it out. If the prompt leaves open something where a wrong guess would be costly (which files to change, whether to delete something, which approach to use), Claude asks you about it before starting. Add "只优化，不用执行" (just optimize it) if you only want the text back.
 
 ```
 You: /prompt-optimizer 你是一名专业提示词优化大师，熟悉各种提示词优化，书写，你主要任务是协助用户完成提示词优化工作
