@@ -55,6 +55,25 @@ Claude: 优化后提示词：
 （接着按优化后的提示词开始工作）
 ```
 
+When a wrong guess would be costly, Claude asks first and waits for your answer:
+
+```
+You: /prompt-optimizer 给我的网站项目加一个用户登陆功能，要好看一点
+
+Claude: 优化后提示词：
+为我的网站项目添加用户登录功能，界面要美观一些。
+
+开始之前，有几点需要先确认。如果我猜错了，返工的成本会比较高：
+
+1. 登录方式：用账号（用户名或邮箱）加密码，还是用手机验证码，或者用第三方登录（如微信、GitHub、Google）？
+2. 功能范围：只做登录，还是连注册、找回密码、退出登录一起做？
+3. 后端认证：项目里已经有用户系统或登录接口了吗？如果没有，要我一并实现后端吗？还是先只做前端页面？
+
+You: 账号密码登录，连注册一起做，后端也要
+
+Claude: （先查看项目的技术栈和现有代码结构，再按你的回答开始实现）
+```
+
 ```
 You (without invoking the skill): Optimize this prompt: "you are helpful assistant that help user write code and also fix bug and also explain things good"
 
