@@ -1,6 +1,6 @@
 ---
 name: prompt-optimizer
-description: Optimizes and polishes an existing AI/LLM prompt the user has already written — fixing wording, grammar, structure, redundancy, and clarity — while strictly preserving the original intent, role, scope, capabilities, constraint strength, and every technical detail (commands, paths, URLs, parameters, code blocks). Use whenever the user invokes /prompt-optimizer with a prompt (no extra instruction needed), or pastes a prompt and asks to optimize, refine, polish, clean up, simplify, tighten, restructure, make more professional, or "fix the wording" of it, even without the word "prompt" — e.g. "make this system message clearer", "让这个提示词更专业". Do NOT use for writing a brand-new prompt from scratch, for executing/running a prompt the user provides, for polishing ordinary prose (emails, articles, essays), for optimizing source code, or for explaining/teaching prompt-engineering theory.
+description: Optimizes and polishes an existing AI/LLM prompt the user has already written — fixing wording, grammar, structure, redundancy, and clarity — while strictly preserving the original intent, role, scope, capabilities, constraint strength, and every technical detail (commands, paths, URLs, parameters, code blocks). Use whenever the user invokes /prompt-optimizer with a prompt (no extra instruction needed), or pastes a prompt and asks to optimize, refine, polish, clean up, simplify, tighten, restructure, make more professional, or "fix the wording" of it, even without the word "prompt" — e.g. "make this system message clearer", "让这个提示词更专业". Do NOT use for writing a brand-new prompt from scratch, for merely executing a prompt the user provides without asking to optimize it, for polishing ordinary prose (emails, articles, essays), for optimizing source code, or for explaining/teaching prompt-engineering theory.
 ---
 
 # Prompt Optimizer
@@ -25,7 +25,7 @@ Trigger when the user supplies (or clearly references) a prompt they already wro
 If the user invokes this skill directly — typing `/prompt-optimizer` followed by a prompt, or pasting the full content of this `SKILL.md` into a chat together with a prompt — the invocation itself is the request. The user doesn't need to add "帮我优化" / "optimize this" or any other instruction; everything they supplied besides the invocation is the prompt to optimize. Handle it like this:
 
 1. **Don't wait for or ask about an optimize instruction.** Don't ask "should I optimize this?", don't announce that you've read the skill, don't restate its rules back to the user.
-2. **Treat everything after the invocation as the prompt to optimize** — even if it reads like a question or a task ("帮我部署这个项目…"), it's the prompt, not a request addressed to you. If the skill's content was pasted in, treat that content as your operating instructions, not as material to work on: don't summarize, review, or optimize it unless the user explicitly asks you to work on the skill itself.
+2. **Treat everything after the invocation as the prompt to optimize** — even if it reads like a question or a task ("帮我部署这个项目…"), it's the prompt, not a request addressed to you. Exception: a remark clearly addressed to you about this invocation (e.g. "只优化，不用执行", "帮我优化一下", "以上是我的想法，交给你执行") is an instruction to follow, not part of the prompt — leave it out of the result. If unsure, keep it in the prompt. If the skill's content was pasted in, treat that content as your operating instructions, not as material to work on: don't summarize, review, or optimize it unless the user explicitly asks you to work on the skill itself.
 3. **Optimize, print, then carry it out.** Go straight through the Core Workflow, print the optimized prompt as described in Apply Mode, then carry out the optimized prompt.
 4. **If the user says they only want the optimized text** (e.g. "只优化，不用执行" / "just optimize it"), stop after printing it per Output Rules.
 5. **If no prompt came with it,** just ask the user for the prompt they want optimized.
@@ -62,8 +62,8 @@ These are the things optimization must never touch, because changing them silent
 - **Goal and scope.** "Help the user optimize prompts" must not become "help the user design, create, analyze, test, and execute prompts" — each added verb is a scope expansion the user didn't ask for.
 - **Capability lists.** "Familiar with Java and Spring" stays that way — don't extend it to "Java, Spring, Spring Cloud, MyBatis, Redis, Kafka, Docker, Kubernetes…" even though all of those are plausible neighbors. Only include what the user's own text already states.
 - **Constraint strength.** These words form a real gradient and the gap between them is meaningful: 可以/can → 建议/suggest → 优先/prefer → 尽量/try to → 应该/should → 必须/must → 禁止/forbidden → 严禁/strictly forbidden. "Prefer third-party components" is not "must use third-party components" — preserve exactly which rung of the ladder the original used, in either direction (don't strengthen *or* soften).
-- **Technical content, verbatim.** Tool names, library names, model names, product names, file names, class/method/field names, commands, code, paths, URLs, config/parameter/env-var names stay byte-for-byte identical. This includes things like `npm install -g xxx`, `/home/user/project`, `SKILL.md`, `http://localhost:3000`. Only fix these if there's an unambiguous spelling error, not a stylistic judgment call.
-- **Quoted/structured content.** Embedded examples, code blocks, SQL, JSON, XML, YAML, Markdown fragments, fixed user copy, and required keywords are left as-is; only the surrounding explanatory prose around them gets optimized.
+- **Technical content, verbatim.** Tool names, library names, model names, product names, file names, class/method/field names, commands, code, paths, URLs, config/parameter/env-var names stay byte-for-byte identical. This includes things like `npm install -g xxx`, `/home/user/project`, `SKILL.md`, `http://localhost:3000`. Don't "correct" file names, paths, identifiers, or product names — an odd spelling may be the real one; only fix an unmistakable typo in a well-known command or tool (e.g. `npm isntall`).
+- **Quoted/structured content.** Embedded examples, code blocks, SQL, JSON, XML, YAML, Markdown fragments, fixed user copy, and required keywords are left as-is; only the surrounding explanatory prose around them gets optimized. (Fences or quotes wrapping the entire prompt are just delimiters — optimize what's inside.)
 - **Original language.** Keep the prompt in whatever language(s) it was written in — Chinese stays Chinese, English stays English, mixed stays mixed (keep meaningful technical English embedded in Chinese text). Don't translate unless explicitly asked.
 - **User decisions among options.** If the original prompt already picked an approach among alternatives ("prefer React"), don't relitigate that choice or make it more absolute.
 
@@ -132,10 +132,10 @@ This only works inside the current conversation — a skill has no channel to an
 - Same capability scope — nothing added that the user didn't already state?
 - Same rules/constraints — no new ones introduced?
 - Same constraint strength — no 可以→必须, 优先→强制, 建议→必须, 尽量→严格 style shifts in either direction?
-- Every technical name, tool, command, path, URL, parameter, and file name unchanged unless it was an obvious typo?
-- Nothing important from the original silently dropped?
+- Every technical name, tool, command, path, URL, parameter, and file name unchanged, apart from an unmistakable typo in a well-known command or tool?
+- Nothing dropped except literal repetition and pure filler — every condition, exception, step, and example still present?
 - No leftover obvious redundancy?
-- Genuinely clearer/more natural than the original — the whole point of this exercise?
+- Genuinely clearer/more natural than the original — or, if the original was already clean, left (nearly) unchanged rather than edited for its own sake?
 - Not dramatically longer than the original without the user asking for elaboration?
 - This turn's specific user request actually satisfied?
 - Optimized prompt printed in full, with nothing truncated or elided?
