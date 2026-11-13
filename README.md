@@ -10,7 +10,7 @@ Point it at a prompt you've already written and ask to optimize / refine / polis
 
 - the original goal, role, and scope
 - the capability list (it will not add tools/technologies you didn't mention)
-- constraint strength (可以/can → 建议/suggest → 优先/prefer → 尽量/try to → 应该/should → 必须/must → 禁止/forbidden → 严禁/strictly forbidden — it will not silently strengthen or soften these)
+- constraint strength (可以/can → 建议/suggest → 优先/prefer → 尽量/try to → 应该/要/should → 必须/须/must → 禁止/forbidden → 严禁/strictly forbidden — it will not silently strengthen or soften these, or add intensifiers like 严格/务必 the original didn't have)
 - every technical detail verbatim: commands, paths, URLs, parameters, file names, code blocks, model/tool names (only an unmistakable typo in a well-known command or tool gets fixed)
 - the original language (Chinese stays Chinese, English stays English, mixed stays mixed)
 
@@ -123,6 +123,17 @@ A prompt that is already clean comes back (nearly) unchanged rather than rewritt
 Want to know what changed? Just ask: "tell me what you changed" or "give me a before/after comparison" — by default the skill stays silent about its edits and just returns the result.
 
 When the skill is triggered by an ordinary "optimize this prompt" request instead of `/prompt-optimizer`, you get the optimized text back and decide what to do with it. If you want to skip the copy-paste round trip and have Claude immediately start operating under the optimized prompt in the same conversation (it works the same as `/prompt-optimizer`), say so explicitly — e.g. "优化完直接用" / "apply it directly, don't make me paste it back". This only works within the current conversation; a skill has no way to push text into a different chat window or model.
+
+## Tests
+
+`evals/` holds behavior regression tests for `SKILL.md`: 18 cases covering constraint strength, verbatim technical content, language preservation, explicit invocation, asking before guessing and multi-turn behavior. They run through headless Claude Code (`claude -p`, isolated from your own skills, plugins and MCP servers) and use your Claude usage:
+
+```bash
+python3 evals/run_evals.py run --out /tmp/po-evals          # add --cases id1,id2 or --runs 3 as needed
+python3 evals/run_evals.py grade /tmp/po-evals
+```
+
+Model output varies between runs, so treat a single failure as a signal to rerun that case, not as a verdict.
 
 ## Design principles
 

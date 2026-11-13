@@ -1,0 +1,412 @@
+[
+  {
+    "id": "o-constraint-ladder",
+    "desc": "约束强度原样保留，不扩充技术栈，产品名大小写不改，普通触发只输出提示词",
+    "turns": [
+      {
+        "mode": "ordinary",
+        "text": "帮我优化这个提示词：你是前端工程师，熟悉vue和react，写代码时优先使用第三方组件库，尽量不要自己造轮子，禁止使用jquery"
+      }
+    ],
+    "original": "你是前端工程师，熟悉vue和react，写代码时优先使用第三方组件库，尽量不要自己造轮子，禁止使用jquery",
+    "checks": {
+      "contains": [
+        "优先",
+        "尽量",
+        "禁止",
+        "vue",
+        "react",
+        "jquery"
+      ],
+      "not_contains": [
+        "必须",
+        "严禁",
+        "务必",
+        "优化后提示词"
+      ],
+      "not_regex": [
+        "(?i)typescript",
+        "(?i)element|ant design",
+        "(?i)vite|webpack"
+      ],
+      "max_ratio": 2.0
+    }
+  },
+  {
+    "id": "o-tech-verbatim",
+    "desc": "修知名命令拼写，不改文件名/路径/URL",
+    "turns": [
+      {
+        "mode": "ordinary",
+        "text": "帮我优化这个提示词：你是部署助手，先执行 npm isntall 安装依赖，然后读取 src/utils/recieve_handler.js 里的配置，把服务部署到 http://localhost:3000"
+      }
+    ],
+    "original": "你是部署助手，先执行 npm isntall 安装依赖，然后读取 src/utils/recieve_handler.js 里的配置，把服务部署到 http://localhost:3000",
+    "checks": {
+      "contains": [
+        "npm install",
+        "src/utils/recieve_handler.js",
+        "http://localhost:3000"
+      ],
+      "not_contains": [
+        "isntall",
+        "receive_handler",
+        "优化后提示词"
+      ],
+      "max_ratio": 2.0
+    }
+  },
+  {
+    "id": "o-compress-conditions",
+    "desc": "精简时条件、例外、示例都不能丢",
+    "turns": [
+      {
+        "mode": "ordinary",
+        "text": "帮我精简一下这个提示词：你是一个写周报的助手，你的任务就是帮我写周报，就是把我每天做的事情整理成周报。如果我没有提供某天的内容，就直接跳过那天，不要自己编。除非我特别说明，否则周报都用中文写。写的时候按照 周一 到 周五 的顺序排。例如：周一：完成登录模块联调。不确定的地方先问我。"
+      }
+    ],
+    "original": "你是一个写周报的助手，你的任务就是帮我写周报，就是把我每天做的事情整理成周报。如果我没有提供某天的内容，就直接跳过那天，不要自己编。除非我特别说明，否则周报都用中文写。写的时候按照 周一 到 周五 的顺序排。例如：周一：完成登录模块联调。不确定的地方先问我。",
+    "checks": {
+      "contains": [
+        "跳过",
+        "编",
+        "除非",
+        "中文",
+        "周一",
+        "周五",
+        "完成登录模块联调",
+        "问我"
+      ],
+      "max_ratio": 1.0
+    }
+  },
+  {
+    "id": "o-english-scope",
+    "desc": "英文保持英文，不扩充能力范围",
+    "turns": [
+      {
+        "mode": "ordinary",
+        "text": "Optimize this prompt: \"you are helpful assistant that help user write code and also fix bug and also explain things good\""
+      }
+    ],
+    "original": "you are helpful assistant that help user write code and also fix bug and also explain things good",
+    "checks": {
+      "regex": [
+        "(?i)write code",
+        "(?i)fix",
+        "(?i)explain"
+      ],
+      "not_regex": [
+        "[\\u4e00-\\u9fff]",
+        "(?i)\\btest",
+        "(?i)review|refactor|document|best practice",
+        "(?i)optimized prompt"
+      ],
+      "max_ratio": 2.0
+    }
+  },
+  {
+    "id": "o-already-clean",
+    "desc": "原文已经干净时基本不动",
+    "turns": [
+      {
+        "mode": "ordinary",
+        "text": "Optimize this prompt: You are a senior Python code reviewer. Review the code the user sends for bugs and readability issues, and reply with a numbered list of findings."
+      }
+    ],
+    "original": "You are a senior Python code reviewer. Review the code the user sends for bugs and readability issues, and reply with a numbered list of findings.",
+    "checks": {
+      "min_similarity": 0.8,
+      "not_regex": [
+        "(?i)security|performance|pep ?8|style guide"
+      ]
+    }
+  },
+  {
+    "id": "o-no-template",
+    "desc": "短提示词不套模板、不加背景知识",
+    "turns": [
+      {
+        "mode": "ordinary",
+        "text": "帮我优化这个提示词：你是一个翻译助手，把用户发的中文翻译成英文，语气自然一点"
+      }
+    ],
+    "original": "你是一个翻译助手，把用户发的中文翻译成英文，语气自然一点",
+    "checks": {
+      "contains": [
+        "中文",
+        "英文",
+        "自然"
+      ],
+      "not_regex": [
+        "#",
+        "(?m)^\\s*[-*] ",
+        "(?i)角色|工作流程|输出格式|约束|role|workflow",
+        "专业术语|文化|信达雅|上下文"
+      ],
+      "max_ratio": 2.5
+    }
+  },
+  {
+    "id": "o-codeblock-verbatim",
+    "desc": "代码块/JSON 字段名原样保留",
+    "turns": [
+      {
+        "mode": "ordinary",
+        "text": "帮我优化这个提示词：你要从用户输入里提取信息，按照下面的格式输出，不要输出别的东西\n```json\n{\"name\": \"\", \"phone_num\": \"\", \"addr\": \"\"}\n```"
+      }
+    ],
+    "checks": {
+      "contains": [
+        "{\"name\": \"\", \"phone_num\": \"\", \"addr\": \"\"}",
+        "不要"
+      ],
+      "not_contains": [
+        "phone_number",
+        "address",
+        "优化后提示词",
+        "严格"
+      ]
+    }
+  },
+  {
+    "id": "o-explain-changes",
+    "desc": "用户要求时才说明改动",
+    "turns": [
+      {
+        "mode": "ordinary",
+        "text": "帮我优化这个提示词，并告诉我你改了哪些地方：你是客服，回答用户问题要耐心，不知道的不要乱说"
+      }
+    ],
+    "checks": {
+      "contains": [
+        "耐心",
+        "不知道"
+      ],
+      "regex": [
+        "修改|改动|调整|改为|改成"
+      ]
+    }
+  },
+  {
+    "id": "o-dont-make-long",
+    "desc": "\"不要太长\"作为硬约束，且不扩充工具",
+    "turns": [
+      {
+        "mode": "ordinary",
+        "text": "帮我优化这个提示词，不要太长：你是一个数据分析师，你很擅长数据分析，你的工作是帮助用户分析数据，用户会给你一些数据，可能是表格也可能是csv文件，你需要帮用户分析这些数据，找出里面有用的信息，然后告诉用户，分析的时候要仔细，结论要有数据支撑，不要瞎猜。"
+      }
+    ],
+    "original": "你是一个数据分析师，你很擅长数据分析，你的工作是帮助用户分析数据，用户会给你一些数据，可能是表格也可能是csv文件，你需要帮用户分析这些数据，找出里面有用的信息，然后告诉用户，分析的时候要仔细，结论要有数据支撑，不要瞎猜。",
+    "checks": {
+      "contains": [
+        "表格",
+        "支撑",
+        "猜"
+      ],
+      "not_regex": [
+        "(?i)python|sql|excel",
+        "可视化|图表"
+      ],
+      "max_ratio": 0.9,
+      "regex": [
+        "(?i)csv"
+      ],
+      "not_contains": [
+        "须",
+        "严格"
+      ]
+    }
+  },
+  {
+    "id": "o-soft-imperative",
+    "desc": "普通祈使句（要/按照）不升级成必须/严格/务必",
+    "turns": [
+      {
+        "mode": "ordinary",
+        "text": "帮我优化这个提示词：你是一个代码助手，回答要简洁，代码要有注释，输出按照用户给的格式来"
+      }
+    ],
+    "original": "你是一个代码助手，回答要简洁，代码要有注释，输出按照用户给的格式来",
+    "checks": {
+      "contains": [
+        "简洁",
+        "注释",
+        "格式"
+      ],
+      "not_contains": [
+        "须",
+        "严格",
+        "务必",
+        "一定"
+      ],
+      "max_ratio": 2.0
+    }
+  },
+  {
+    "id": "e-strip-remark",
+    "desc": "显式调用：剥离对 AI 说的话，打印标签（纯文本可答的任务）",
+    "turns": [
+      {
+        "mode": "explicit",
+        "text": "你是一名资深运维工程师，帮我解释一下 nginx 里 proxy_pass 末尾加不加斜杠有什么区别。以上是我的想法，具体执行交给你做"
+      }
+    ],
+    "checks": {
+      "contains": [
+        "优化后提示词",
+        "proxy_pass"
+      ],
+      "not_contains": [
+        "以上是我的想法",
+        "交给你"
+      ]
+    }
+  },
+  {
+    "id": "e-only-optimize",
+    "desc": "显式调用 + 只优化：不执行、不带指令本身",
+    "turns": [
+      {
+        "mode": "explicit",
+        "text": "只优化，不用执行。你是部署助手，先执行 npm isntall 安装依赖，然后启动服务"
+      }
+    ],
+    "checks": {
+      "contains": [
+        "npm install"
+      ],
+      "not_contains": [
+        "只优化",
+        "不用执行",
+        "isntall"
+      ],
+      "max_chars": 250
+    }
+  },
+  {
+    "id": "e-ask-costly",
+    "desc": "显式调用：开放且代价高的决策先问",
+    "turns": [
+      {
+        "mode": "explicit",
+        "text": "给我的网站项目加一个用户登陆功能，要好看一点"
+      }
+    ],
+    "checks": {
+      "contains": [
+        "优化后提示词",
+        "登录"
+      ],
+      "regex": [
+        "[？?]"
+      ]
+    }
+  },
+  {
+    "id": "e-no-needless-ask",
+    "desc": "显式调用：任务清楚时不追问，直接做",
+    "turns": [
+      {
+        "mode": "explicit",
+        "text": "用一句话解释什么是 TCP 三次握手"
+      }
+    ],
+    "checks": {
+      "contains": [
+        "优化后提示词",
+        "三次握手"
+      ],
+      "not_regex": [
+        "请问|需要确认|你希望|是否需要|想了解"
+      ],
+      "max_chars": 400
+    }
+  },
+  {
+    "id": "e-identifiers",
+    "desc": "显式调用：标识符逐字保留",
+    "turns": [
+      {
+        "mode": "explicit",
+        "text": "帮我写个 python 脚本，读取 config.yaml 里的 db_host 和 db_port，然后用 psycopg2 连数据库测试一下能不能连上，直接把代码贴给我"
+      }
+    ],
+    "checks": {
+      "contains": [
+        "优化后提示词",
+        "config.yaml",
+        "db_host",
+        "db_port",
+        "psycopg2"
+      ]
+    }
+  },
+  {
+    "id": "m-task-not-sticky",
+    "desc": "一次性任务做完后，不该继续支配后续无关消息",
+    "turns": [
+      {
+        "mode": "explicit",
+        "text": "把这句话翻译成英文：我喜欢吃苹果"
+      },
+      {
+        "mode": "plain",
+        "text": "今天星期几？"
+      }
+    ],
+    "checks": {
+      "regex": [
+        "[\\u4e00-\\u9fff]"
+      ],
+      "not_regex": [
+        "(?i)what day"
+      ]
+    }
+  },
+  {
+    "id": "m-role-sticky",
+    "desc": "角色型提示词应在后续轮次持续生效",
+    "turns": [
+      {
+        "mode": "explicit",
+        "text": "你是一名英语翻译，把我之后发的中文都翻译成英文"
+      },
+      {
+        "mode": "plain",
+        "text": "今天天气很好"
+      }
+    ],
+    "checks": {
+      "regex": [
+        "(?i)weather"
+      ]
+    }
+  },
+  {
+    "id": "m-latest-wins",
+    "desc": "再次显式调用时，新提示词替换旧的",
+    "turns": [
+      {
+        "mode": "explicit",
+        "text": "你是一名英语翻译，把我之后发的中文都翻译成英文"
+      },
+      {
+        "mode": "explicit",
+        "text": "你是一名日语翻译，把我之后发的中文都翻译成日文"
+      },
+      {
+        "mode": "plain",
+        "text": "我喜欢吃苹果"
+      }
+    ],
+    "checks": {
+      "regex": [
+        "[\\u3040-\\u30ff]"
+      ],
+      "not_regex": [
+        "(?i)\\bI like"
+      ]
+    }
+  }
+]
